@@ -1,147 +1,120 @@
 <template>
-  <v-container>
-    <v-layout
-      text-xs-center
-      wrap
-    >
-      <v-flex xs12>
-        <v-img
-          :src="require('../assets/logo.svg')"
-          class="my-3"
-          contain
-          height="200"
-        ></v-img>
-      </v-flex>
+  <div class="hello">
+    <div class="left">
+      <h1>{{ title }}</h1>
 
-      <v-flex mb-4>
-        <h1 class="display-2 font-weight-bold mb-3">
-          Welcome to Vuetify
-        </h1>
-        <p class="subheading font-weight-regular">
-          For help and collaboration with other Vuetify developers,
-          <br>please join our online
-          <a href="https://community.vuetifyjs.com" target="_blank">Discord Community</a>
-        </p>
-      </v-flex>
+      <form @submit.prevent="addLink">
+        <input class="link-input" type="text" placeholder="Add Link" v-model="newLink"/>
 
-      <v-flex
-        mb-5
-        xs12
-      >
-        <h2 class="headline font-weight-bold mb-3">What's next?</h2>
+      </form>
 
-        <v-layout justify-center>
-          <a
-            v-for="(next, i) in whatsNext"
-            :key="i"
-            :href="next.href"
-            class="subheading mx-3"
-            target="_blank"
-          >
-            {{ next.text }}
-          </a>
-        </v-layout>
-      </v-flex>
-
-      <v-flex
-        xs12
-        mb-5
-      >
-        <h2 class="headline font-weight-bold mb-3">Important Links</h2>
-
-        <v-layout justify-center>
-          <a
-            v-for="(link, i) in importantLinks"
-            :key="i"
-            :href="link.href"
-            class="subheading mx-3"
-            target="_blank"
-          >
-            {{ link.text }}
-          </a>
-        </v-layout>
-      </v-flex>
-
-      <v-flex
-        xs12
-        mb-5
-      >
-        <h2 class="headline font-weight-bold mb-3">Ecosystem</h2>
-
-        <v-layout justify-center>
-          <a
-            v-for="(eco, i) in ecosystem"
-            :key="i"
-            :href="eco.href"
-            class="subheading mx-3"
-            target="_blank"
-          >
-            {{ eco.text }}
-          </a>
-        </v-layout>
-      </v-flex>
-    </v-layout>
-  </v-container>
+      <ul>
+        <li v-for="(link, index) in links" :key="index">
+          {{ link }}
+          <button v-on:click="removeLinks(index)" class="rm">Remove</button>
+        </li>
+      </ul>
+    </div>
+    <div class="right">
+      <stats />
+    </div>
+  </div>
 </template>
 
 <script>
-  export default {
-    data: () => ({
-      ecosystem: [
-        {
-          text: 'vuetify-loader',
-          href: 'https://github.com/vuetifyjs/vuetify-loader'
-        },
-        {
-          text: 'github',
-          href: 'https://github.com/vuetifyjs/vuetify'
-        },
-        {
-          text: 'awesome-vuetify',
-          href: 'https://github.com/vuetifyjs/awesome-vuetify'
-        }
-      ],
-      importantLinks: [
-        {
-          text: 'Documentation',
-          href: 'https://vuetifyjs.com'
-        },
-        {
-          text: 'Chat',
-          href: 'https://community.vuetifyjs.com'
-        },
-        {
-          text: 'Made with Vuetify',
-          href: 'https://madewithvuetifyjs.com'
-        },
-        {
-          text: 'Twitter',
-          href: 'https://twitter.com/vuetifyjs'
-        },
-        {
-          text: 'Articles',
-          href: 'https://medium.com/vuetify'
-        }
-      ],
-      whatsNext: [
-        {
-          text: 'Explore components',
-          href: 'https://vuetifyjs.com/components/api-explorer'
-        },
-        {
-          text: 'Select a layout',
-          href: 'https://vuetifyjs.com/layout/pre-defined'
-        },
-        {
-          text: 'Frequently Asked Questions',
-          href: 'https://vuetifyjs.com/getting-started/frequently-asked-questions'
-        }
+import Stats from '@/components/Stats.vue'
+import { mapState, mapMutations, mapActions } from 'vuex'
 
-      ]
-    })
+export default {
+  name: 'HelloWorld',
+  components: {
+    Stats
+  },
+  data() {
+    return {
+      newLink: ''
+    }
+  },
+  computed: {
+    ...mapState([
+      'title',
+      'links'
+    ]),
+  },
+  methods: {
+    ...mapMutations([
+      'ADD_LINK',
+    ]),
+    ...mapActions([
+      'removeLink'
+    ]),
+    addLink: function () {
+      this.ADD_LINK(this.newLink)
+      this.newLink = ''
+    },
+    removeLinks: function (link) {
+      this.removeLink(link);
+    }
   }
+}
 </script>
 
+<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style>
+  html, #app, .home {
+    height: 100%;
+  }
+  body {
+    background-color: #F4F4F4;
+    margin: 0;
+    height: 100%;
+  }
 
+  .hello {
+    display: grid;
+    grid-template-columns: repeat(2, 50%);
+    grid-template-rows: 100%;
+    grid-template-areas:
+      "left right";
+    height: 100%;
+  }
+
+  .left, .right {
+    padding: 30px;
+  }
+
+  ul {
+    list-style-type: none;
+    padding: 0;
+  }
+  ul li {
+    padding: 20px;
+    background: white;
+    margin-bottom: 8px;
+  }
+
+  .right {
+    grid-area: right;
+    background-color: #E9E9E9;
+  }
+
+  input {
+    border: none;
+    padding: 20px;
+    width: calc(100% - 40px);
+    box-shadow: 0 5px 5px lightgrey;
+    margin-bottom: 50px;
+    outline: none;
+  }
+
+  .rm {
+    float: right;
+    text-transform: uppercase;
+    font-size: 0.8em;
+    background: #f9d0e3;
+    border: none;
+    padding: 5px;
+    color: #ff0076;
+    cursor: pointer;
+  }
 </style>
